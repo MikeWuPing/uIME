@@ -1,0 +1,13 @@
+# 发布件：二进制一律按二进制处理，任何平台检出都不得做行尾转换
+*.efi  binary
+*.pdf  binary
+*.docx binary
+*.png  binary
+*.gif  binary
+
+# 文本统一 LF
+.gitattributes text eol=lf
+LICENSE       text eol=lf
+*.md   text eol=lf
+*.html text eol=lf
+*.txt  text eol=lf

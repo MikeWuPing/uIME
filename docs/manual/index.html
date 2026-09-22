@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>uIME 产品手册 · Product Manual</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f7f5; --line:#e2e0da; --line2:#cfccc4;
+    --ink:#24241f; --ink2:#5b5a54; --ink3:#8a887f;
+    --accent:#2b6ef4; --accent2:#9c42ce; --ok:#1d9e75; --warn:#ba7517; --stop:#a32d2d;
+    --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+       font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+  [lang=en]{display:none}
+  body.en [lang=zh]{display:none}
+  body.en [lang=en]{display:inline}
+  body.en p[lang=en],body.en li[lang=en],body.en td[lang=en],body.en th[lang=en],
+  body.en h1[lang=en],body.en h2[lang=en],body.en h3[lang=en],
+  body.en dd[lang=en],body.en dt[lang=en],body.en figcaption[lang=en]{display:revert}
+
+  .wrap{display:flex;align-items:flex-start;max-width:1180px;margin:0 auto;gap:0}
+  nav{position:sticky;top:0;width:230px;flex:0 0 230px;height:100vh;overflow-y:auto;
+      padding:28px 18px 40px;border-right:1px solid var(--line);font-size:13.5px}
+  nav .brand{font-size:19px;font-weight:600;letter-spacing:.02em;margin-bottom:2px}
+  nav .brand span{background:linear-gradient(90deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;background-clip:text;color:transparent}
+  nav .meta{color:var(--ink3);font-size:12px;margin-bottom:18px;font-family:var(--mono)}
+  nav ol{list-style:none;margin:0;padding:0;counter-reset:s}
+  nav li{counter-increment:s;margin:1px 0}
+  nav a{display:block;padding:6px 9px;border-radius:6px;color:var(--ink2);text-decoration:none;
+        border-left:2px solid transparent}
+  nav a:hover{background:var(--panel);color:var(--ink)}
+  nav a.on{background:var(--panel);color:var(--ink);border-left-color:var(--accent);font-weight:600}
+  nav li b{color:var(--ink3);font-weight:600;font-family:var(--mono);font-size:11px;margin-right:5px}
+
+  main{flex:1 1 auto;min-width:0;padding:38px 46px 90px;max-width:940px}
+  h1{font-size:30px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em}
+  h2{font-size:21px;font-weight:600;margin:52px 0 14px;padding-bottom:8px;
+     border-bottom:1px solid var(--line);scroll-margin-top:20px}
+  h3{font-size:16px;font-weight:600;margin:30px 0 8px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:var(--mono);font-size:12.5px;background:var(--panel);
+       border:1px solid var(--line);border-radius:4px;padding:1px 5px;white-space:nowrap}
+  a{color:var(--accent)}
+  kbd{font-family:var(--mono);font-size:12px;background:#fff;border:1px solid var(--line2);
+      border-bottom-width:2px;border-radius:5px;padding:2px 7px;box-shadow:0 1px 0 var(--line)}
+
+  .lede{font-size:16.5px;color:var(--ink2);border-left:3px solid var(--accent);
+        padding:2px 0 2px 16px;margin:16px 0 8px}
+
+  figure{margin:20px 0;padding:0}
+  figure img{display:block;width:100%;max-width:100%;border:1px solid var(--line);
+             border-radius:9px;background:var(--panel);image-rendering:pixelated}
+  figcaption{color:var(--ink3);font-size:13px;margin-top:7px;padding-left:2px}
+  .dbl{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .dbl figure{margin:0}
+
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+  th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel);font-weight:600;font-size:13px;color:var(--ink2)}
+  tbody tr:hover{background:#fbfbf9}
+  td code{white-space:normal}
+
+  .note{border:1px solid var(--line);border-left:3px solid var(--accent);
+        background:var(--panel);border-radius:0 8px 8px 0;padding:12px 16px;margin:18px 0;font-size:14px}
+  .warn{border-left-color:var(--warn)}
+  .stop{border-left-color:var(--stop)}
+  .ok{border-left-color:var(--ok)}
+  .note p:first-child{margin-top:0}.note p:last-child{margin-bottom:0}
+  .note strong{color:var(--ink)}
+
+  pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+      padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.65}
+  pre code{background:none;border:none;padding:0;font-size:12.5px;white-space:pre}
+
+  .topbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:-30px}
+  .langbtn{font-family:var(--mono);font-size:12px;border:1px solid var(--line2);background:#fff;
+           color:var(--ink2);border-radius:6px;padding:3px 11px;cursor:pointer}
+  .langbtn[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+  .card{border:1px solid var(--line);border-radius:9px;padding:13px 15px;background:var(--panel)}
+  .card .t{font-weight:600;font-size:14px;margin-bottom:3px}
+  .card .d{font-size:13px;color:var(--ink2);line-height:1.6}
+
+  .kbdrow{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}
+  .foot{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);
+        color:var(--ink3);font-size:12.5px}
+  @media (max-width:900px){
+    nav{display:none} main{padding:26px 20px 70px} .dbl,.cards{grid-template-columns:1fr}
+    .wrap{display:block}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="brand"><span>uIME</span></div>
+  <div class="meta">v0.1.0.49 · 2026-09-22</div>
+  <ol>
+    <li><a href="#intro"><b>01</b><span lang="zh">它解决什么</span><span lang="en">The problem</span></a></li>
+    <li><a href="#start"><b>02</b><span lang="zh">快速上手</span><span lang="en">Getting started</span></a></li>
+    <li><a href="#ui"><b>03</b><span lang="zh">界面导览</span><span lang="en">The window</span></a></li>
+    <li><a href="#type"><b>04</b><span lang="zh">打字与选字</span><span lang="en">Typing &amp; selecting</span></a></li>
+    <li><a href="#pages"><b>05</b><span lang="zh">翻页找字</span><span lang="en">Paging</span></a></li>
+    <li><a href="#scheme"><b>06</b><span lang="zh">输入方案</span><span lang="en">Input schemes</span></a></li>
+    <li><a href="#kbd"><b>07</b><span lang="zh">软键盘</span><span lang="en">Soft keyboard</span></a></li>
+    <li><a href="#settings"><b>08</b><span lang="zh">设置</span><span lang="en">Settings</span></a></li>
+    <li><a href="#move"><b>09</b><span lang="zh">拖动与停靠</span><span lang="en">Moving &amp; docking</span></a></li>
+    <li><a href="#overlay"><b>10</b><span lang="zh">浮在宿主之上</span><span lang="en">Above the host</span></a></li>
+    <li><a href="#config"><b>11</b><span lang="zh">配置文件</span><span lang="en">uime.cfg</span></a></li>
+    <li><a href="#trouble"><b>12</b><span lang="zh">故障排查</span><span lang="en">Troubleshooting</span></a></li>
+    <li><a href="#limits"><b>13</b><span lang="zh">已知限制</span><span lang="en">Known limits</span></a></li>
+  </ol>
+</nav>
+
+<main>
+  <div class="topbar">
+    <button class="langbtn" id="bzh" aria-pressed="true">中文</button>
+    <button class="langbtn" id="ben" aria-pressed="false">English</button>
+  </div>
+
+  <h1>
+    <span lang="zh">uIME 产品手册</span>
+    <span lang="en">uIME Product Manual</span>
+  </h1>
+  <p class="meta" style="color:var(--ink3);font-family:var(--mono);font-size:12.5px;margin:0 0 4px">
+    v0.1.0.49 · 2026-09-22 · 专有许可（二进制品个人用户免费）
+  </p>
+
+  <p class="lede">
+    <span lang="zh"><b>UEFI Shell 下的汉字输入法。</b>以常驻驱动形态 <code>load</code> 进系统，接管控制台输入，把拼音翻译成汉字并以 Unicode 按键注入——<b>任何读控制台的 UEFI 程序都能收到汉字</b>，不需要为它改一行代码。</span>
+    <span lang="en"><b>A Chinese input method for the UEFI Shell.</b> Loaded as a resident driver, it takes over console input and injects Han characters as ordinary Unicode keystrokes — so <b>any UEFI program that reads the console receives Chinese</b>, without changing a line of its own.</span>
+  </p>
+
+  <!-- ============================================ 01 -->
+  <h2 id="intro">
+    <span lang="zh">01 · 它解决什么</span>
+    <span lang="en">01 · The problem</span>
+  </h2>
+
+  <p>
+    <span lang="zh">UEFI Shell 与绝大多数 UEFI 应用只认 ASCII：一次按键就是一个 <code>EFI_INPUT_KEY.UnicodeChar</code>，汉字（<code>U+4E2D</code> 这种）根本进不来。想在固件环境里编辑一个含中文的文件、在固件自带的编辑器里写中文，此前没有输入手段。</span>
+    <span lang="en">UEFI consoles speak ASCII. A keystroke is an <code>EFI_INPUT_KEY.UnicodeChar</code>, and a Han character like <code>U+4E2D</code> never arrives — which left no way to author Chinese content inside firmware.</span>
+  </p>
+
+  <p>
+    <span lang="zh">uIME 把「输入法」这整件事下沉到<b>控制台输入层</b>：逐个候选词的翻译发生在按键到达宿主<b>之前</b>，选中的汉字经注入队列变成一个 <code>UnicodeChar &gt;= 0x80</code> 的按键——宿主读到它，与读到一个普通的 Unicode 按键毫无区别。</span>
+    <span lang="en">uIME pushes the input method down to the <b>console-input layer</b>. Translation happens <b>before</b> the key reaches the host, and committed characters leave through an injection queue as <code>UnicodeChar &gt;= 0x80</code> keys — indistinguishable, to the host, from any other keystroke.</span>
+  </p>
+
+  <figure>
+    <img src="images/win-over-host.png" alt="uIME 窗口浮在 UEFI Shell 输出之上">
+    <figcaption>
+      <span lang="zh">合成窗口浮在宿主程序之上。宿主照常打印自己的输出，uIME 的窗口盖在它上面——窗口<b>不是真窗口</b>，而是通过保存被覆盖的像素、在宿主每次重绘后重新盖章实现的。</span>
+      <span lang="en">The composition window floats above the host. The host prints as usual; uIME draws over it. The window is <b>not a real window</b> — it exists because the overlay saves the pixels it covers and re-stamps itself after every host repaint.</span>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="images/uime-demo.gif" alt="uIME 连续演示：输入、拖拽停靠、设置、软键盘" width="960">
+    <figcaption>
+      <span lang="zh">一段连续演示（无剪辑）：在宿主程序里用拼音打出「大小」「左右」并上屏；把窗口拖到<b>左 / 右 / 居中 / 上方</b>四个停靠位；打开设置逐行看六项选项；最后用软键盘点出「南京」。本例在真实 QEMU 测试台上一次录完，无后期合成。</span>
+      <span lang="en">One continuous take, nothing cut: typing 大小 and 左右 in the host, dragging the window to the <b>left, right, centre and top</b> docks, walking the six settings rows, and tapping 南京 out on the soft keyboard. Recorded in one take against the real QEMU harness; nothing composited afterwards.</span>
+    </figcaption>
+  </figure>
+
+  <!-- ============================================ 02 -->
+  <h2 id="start">
+    <span lang="zh">02 · 快速上手</span>
+    <span lang="en">02 · Getting started</span>
+  </h2>
+
+  <p>
+    <span lang="zh">交付物只有 <code>uime.efi</code> <b>一个</b>。构建还会产出一个演示宿主，用来证明汉字真的到了<b>另一个</b>程序里；它不是产品的一部分，交付时可以不要。两者是两个角色，不是同一个程序的两个副本：</span>
+    <span lang="en">The deliverable is <b>one</b> file: <code>uime.efi</code>. The build also produces a demonstration host, used to prove the characters really reach <b>another</b> program; it is not part of the product and can be left out of a shipment. Two roles, not two copies of one program:</span>
+  </p>
+
+  <table>
+    <thead><tr>
+      <th><span lang="zh">文件</span><span lang="en">Image</span></th>
+      <th><span lang="zh">类型</span><span lang="en">Module type</span></th>
+      <th><span lang="zh">职责</span><span lang="en">Role</span></th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><code>uime.efi</code><br><span style="color:var(--ink3);font-size:12px">~2.3 MB</span></td>
+        <td><b>DXE_DRIVER</b><br><span lang="zh">常驻</span><span lang="en">resident</span></td>
+        <td><span lang="zh"><b>输入法本体，也是全部交付物</b>。安装协议拦截层、建立悬浮窗、跑引擎。<b>它是常驻的</b>：入口返回后镜像不解体，包装留在系统里继续服务后续启动的程序。用 <code>load</code> 启动，或者编进固件卷。</span>
+            <span lang="en"><b>The input method - and the entire deliverable</b>. Installs the interception layer, creates the floating window, runs the engine. <b>It stays resident</b> - returning from the entry point does not tear it down. Start it with <code>load</code>, or compile it into a firmware volume.</span></td>
+      </tr>
+      <tr>
+        <td><code>uimehost.efi</code><br><span style="color:var(--ink3);font-size:12px">~2.1 MB</span></td>
+        <td><span lang="zh">UEFI 应用</span><span lang="en">UEFI application</span></td>
+        <td><span lang="zh"><b>演示宿主</b>。一个最小的、会读控制台的程序，用来证明汉字真的到了<b>另一个</b>程序里。它不是产品的一部分，交付时可以不要。</span>
+            <span lang="en"><b>Demonstration host</b>. A minimal console-reading program that proves the characters really reach <b>another</b> application. Not part of the product - ship without it.</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <p><span lang="zh"><b>怎么启动它？</b><br>
+    先 <code>fs0:</code> 建立当前目录再 <code>load uime.efi</code>；在 <code>startup.nsh</code> 里那一刻还没有当前目录，所以要写绝对路径 <code>load fs0:\uime.efi</code>。也可以把启动项指向 <code>uime.efi</code>（固件按 FilePath 加载），或者把它编进固件卷——磁盘上什么都不用放。<br>
+    <b>不能</b>直接敲 <code>uime.efi</code>：Shell 的派发只接受应用镜像，驱动只能被 <code>load</code>、启动项或 dispatcher 启动。这是固件规则，不是本项目的选择。</span>
+    <span lang="en"><b>How do you start it?</b><br>
+    Run <code>fs0:</code> first, then <code>load uime.efi</code>. Inside <code>startup.nsh</code> there is no current directory yet, so use an absolute path: <code>load fs0:\uime.efi</code>. A boot option pointing at <code>uime.efi</code> works too (the firmware loads it by FilePath), and so does compiling it into a firmware volume - nothing on disk at all.<br>
+    <b>Typing</b> <code>uime.efi</code> does <b>not</b> work: the Shell only dispatches application images; a driver is started by <code>load</code>, a boot option, or the dispatcher. Firmware rule, not a project decision.</span></p>
+  </div>
+
+  <h3><span lang="zh">启动顺序</span><span lang="en">Boot order</span></h3>
+  <p><span lang="zh">顺序是<b>强制</b>的：驱动必须先于任何需要中文的应用程序。</span>
+     <span lang="en">The order is <b>mandatory</b>: the driver must precede any application that wants Chinese.</span></p>
+
+  <pre><code>Shell&gt; fs0:                 <span lang="zh">:: 先建立当前目录（或直接写绝对路径）</span><span lang="en">:: install a current directory first (or spell the path absolutely)</span>
+FS0:\&gt; load uime.efi        <span lang="zh">:: 装上并常驻（窗口随即在屏幕上）</span><span lang="en">:: install, resident (window appears)</span>
+Shell&gt; uimehost.efi          <span lang="zh">:: 再启动需要中文输入的应用程序</span><span lang="en">:: then start whatever application needs Chinese</span></code></pre>
+
+  <div class="cards">
+    <div class="card"><div class="t">1 · load uime.efi</div>
+      <div class="d"><span lang="zh">驱动进城。串口出现 <code>[Uime] installed, resident</code> 即就绪。</span><span lang="en">The driver lands. Ready when the log shows <code>[Uime] installed, resident</code>.</span></div></div>
+    <div class="card"><div class="t">2 · 出现窗口</div>
+      <div class="d"><span lang="zh">屏幕底部中央浮出候选窗，左上角显示 <b>中</b>。</span><span lang="en">The composition window appears bottom-centre, showing <b>中</b>.</span></div></div>
+    <div class="card"><div class="t">3 · 任意宿主程序</div>
+      <div class="d"><span lang="zh">此后启动的程序只要读控制台，就能直接收到汉字。</span><span lang="en">Any application started afterwards receives Chinese simply by reading the console.</span></div></div>
+  </div>
+
+  <p><span lang="zh">在自动启动脚本里：</span><span lang="en">In the automated boot script:</span></p>
+  <pre><code><span lang="zh">:: startup.nsh</span><span lang="en">:: startup.nsh</span>
+@echo -off
+load fs0:\uime.efi         <span lang="zh">:: 装上并常驻（那一刻还没有当前目录，必须写绝对路径）</span><span lang="en">:: install, resident (no current directory yet, so spell the path absolutely)</span>
+uimehost.efi               <span lang="zh">:: 演示宿主</span><span lang="en">:: demonstration host</span></code></pre>
+
+  <div class="note warn">
+    <p><span lang="zh">卸载同样是<b>必须干净</b>的操作：失败时不报错，只是把控制台留在指向一块即将被释放的镜像的状态——那是<b>静默损坏</b>。用 <code>dh</code> 找到驱动的 image handle，再 <code>unload</code> 它的编号。</span>
+    <span lang="en">Unloading has to be clean too: its failure is not an error but <b>silent corruption</b> — the console left pointing into an image that is about to be discarded. Find the driver's image handle with <code>dh</code>, then <code>unload</code> its number.</span></p>
+  </div>
+
+  <!-- ============================================ 03 -->
+  <h2 id="ui">
+    <span lang="zh">03 · 界面导览</span>
+    <span lang="en">03 · The window</span>
+  </h2>
+
+  <p><span lang="zh">候选窗是三段式：<b>状态片 + 拼音串 / 候选行 / 提示行</b>。下面是它的结构（按实际像素布局绘制），右侧列出各部件的叫法与作用。</span>
+     <span lang="en">The window is a three-part stack: <b>status chip + pinyin line / candidate row / hint row</b>. The figure is drawn to the real pixel layout; the table names each part.</span></p>
+
+  <figure>
+    <svg viewBox="0 0 520 122" width="100%" role="img" style="border:1px solid var(--line);border-radius:9px;background:#111">
+      <title lang="zh">候选窗结构</title><title lang="en">Composition window layout</title>
+      <rect width="520" height="122" fill="#1b2028"/>
+      <defs>
+        <linearGradient id="g" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#2B6EF5"/><stop offset=".33" stop-color="#5B4BE0"/>
+          <stop offset=".67" stop-color="#9C42CE"/><stop offset="1" stop-color="#D849B4"/>
+        </linearGradient>
+      </defs>
+      <rect x="8" y="8" width="504" height="14" rx="2" fill="url(#g)"/>
+      <rect x="248" y="10" width="40" height="2" fill="#ffffff" opacity=".7"/>
+      <rect x="248" y="14" width="40" height="2" fill="#ffffff" opacity=".7"/>
+      <rect x="248" y="18" width="40" height="2" fill="#ffffff" opacity=".7"/>
+      <rect x="8" y="22" width="34" height="22" rx="4" fill="#2f6fd0"/>
+      <text x="25" y="36" font-size="13" fill="#fff" text-anchor="middle" font-family="sans-serif">中</text>
+      <text x="50" y="38" font-size="13" fill="#8fb6e8" font-family="monospace">zhongguo</text>
+      <rect x="440" y="24" width="32" height="32" rx="7" fill="#39414f"/>
+      <circle cx="456" cy="40" r="8" fill="none" stroke="#c9d0da" stroke-width="1.6"/><circle cx="456" cy="40" r="2.4" fill="#c9d0da"/>
+      <rect x="480" y="24" width="32" height="32" rx="7" fill="#39414f"/>
+      <rect x="487" y="37" width="18" height="11" rx="1.6" fill="none" stroke="#c9d0da" stroke-width="1.4"/>
+      <path d="M489 41h14M489 44h14" stroke="#c9d0da" stroke-width="1.2"/>
+      <text x="34" y="72" font-size="14" fill="#4d9cf2" font-family="monospace">1.</text>
+      <text x="54" y="72" font-size="15" fill="#e8edf4" font-family="sans-serif">中国</text>
+      <text x="104" y="72" font-size="14" fill="#4d9cf2" font-family="monospace">2.</text>
+      <text x="124" y="72" font-size="15" fill="#e8edf4" font-family="sans-serif">重国</text>
+      <text x="174" y="72" font-size="14" fill="#4d9cf2" font-family="monospace">3.</text>
+      <text x="194" y="72" font-size="15" fill="#e8edf4" font-family="sans-serif">中过</text>
+      <text x="34" y="110" font-size="11.5" fill="#8b95a3" font-family="sans-serif">数字键选字　空格 选第一个　回车 上屏拼音</text>
+      <g fill="#e8edf4" font-size="11" font-family="sans-serif">
+        <circle cx="500" cy="14" r="8.5" fill="#fff" opacity=".92"/><text x="500" y="18" text-anchor="middle" fill="#1b2028">1</text>
+        <circle cx="470" cy="30" r="0"/>
+      </g>
+      <g stroke="#e8edf4" stroke-width=".9" fill="none" opacity=".85">
+        <path d="M472 40h26"/><path d="M498 40h-26"/>
+      </g>
+    </svg>
+    <figcaption>
+      <span lang="zh">候选窗各部件。窗口固定 520 像素宽；三种高度分别是 122（仅合成）、266（含软键盘）、334（设置对话框）。</span>
+      <span lang="en">Parts of the composition window. It is a fixed 520px wide; the three heights are 122 (composition only), 266 (with the soft keyboard) and 334 (settings).</span>
+    </figcaption>
+  </figure>
+
+  <table>
+    <thead><tr>
+      <th style="width:26%"><span lang="zh">部件</span><span lang="en">Part</span></th>
+      <th><span lang="zh">作用</span><span lang="en">What it does</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><td><span lang="zh">① 拖动条</span><span lang="en">① Grab bar</span></td>
+        <td><span lang="zh">四色渐变（蔚蓝→靛→紫→洋红），中间三道半透明白握把纹。按住即可拖动窗口。它在左右两侧<b>避开</b>了两个角上的按钮——按钮顶部只比它低 2 像素，满宽会把点齿轮变成拖窗口。</span>
+            <span lang="en">Four-colour gradient (azure → indigo → purple → magenta) with three translucent white grip lines. Drag the window by it. It deliberately <b>stops short</b> of the two corner buttons — their tops sit only 2px below, and a full-width bar would turn a click on the gear into a drag.</span></td></tr>
+      <tr><td><span lang="zh">② 中/英 状态片</span><span lang="en">② Language chip</span></td>
+        <td><span lang="zh">显示当前中/英状态。它同时是个<b>点击目标</b>——点它切换中英，比记住 <kbd>Shift</kbd> / <kbd>Ctrl</kbd>+<kbd>Space</kbd> 好发现得多。</span>
+            <span lang="en">Shows the current Chinese/English mode, and is also a <b>click target</b> that toggles it — far more discoverable than remembering <kbd>Shift</kbd> or <kbd>Ctrl</kbd>+<kbd>Space</kbd>.</span></td></tr>
+      <tr><td><span lang="zh">③ 拼音串</span><span lang="en">③ Pinyin line</span></td>
+        <td><span lang="zh">正在拼的内容。<kbd>Backspace</kbd> 退一个字母，<kbd>Esc</kbd> 丢弃整串。</span>
+            <span lang="en">What is being spelled. <kbd>Backspace</kbd> removes one letter, <kbd>Esc</kbd> discards the buffer.</span></td></tr>
+      <tr><td><span lang="zh">④ 候选行</span><span lang="en">④ Candidate row</span></td>
+        <td><span lang="zh">按词频排名的候选词。整串词优先，不足时用首音节单字补齐。数字键选字，也可以直接点。</span>
+            <span lang="en">Candidates ranked by word frequency — whole words first, then single characters matching the leading syllable. Select with number keys or by clicking.</span></td></tr>
+      <tr><td><span lang="zh">⑤ 提示行</span><span lang="en">⑤ Hint row</span></td>
+        <td><span lang="zh">按当前状态说话的一行，见 <b>§05</b>。它的文字存在标签之外——窗口每次换高度都整个重建，只写在标签里的文字重建后是空的。</span>
+            <span lang="en">A line that reports the keys that matter right now; see <b>§05</b>. Its text lives outside the label, because the window is rebuilt wholesale on every height change.</span></td></tr>
+      <tr><td><span lang="zh">⑥ 齿轮（设置）</span><span lang="en">⑥ Gear (settings)</span></td>
+        <td><span lang="zh">打开设置对话框，等价于 <kbd>Ctrl</kbd>+<kbd>`</kbd>。</span>
+            <span lang="en">Opens the settings dialog, same as <kbd>Ctrl</kbd>+<kbd>`</kbd>.</span></td></tr>
+      <tr><td><span lang="zh">⑦ 软键盘</span><span lang="en">⑦ Soft keyboard</span></td>
+        <td><span lang="zh">展开/收起三行 QWERTY 软键盘。展开时窗口加高。</span>
+            <span lang="en">Shows or hides a three-row QWERTY soft keyboard, growing the window when shown.</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <p><span lang="zh"><b>图标是位图，不是字形。</b>右上角两个按钮用的是距离场光栅化出来的 ARGB8888 位图，而不是字体里的符号——字库是 CJK 子集，键盘和齿轮这类符号不在覆盖范围内，用字形必然画成方框。</span>
+    <span lang="en"><b>The icons are bitmaps, not glyphs.</b> The two corner buttons use ARGB8888 bitmaps rasterised from a signed distance field rather than font glyphs: the fonts are CJK subsets with no keyboard or gear in them, and a missing glyph draws as an empty box.</span></p>
+  </div>
+
+  <!-- ============================================ 04 -->
+  <h2 id="type">
+    <span lang="zh">04 · 打字与选字</span>
+    <span lang="en">04 · Typing &amp; selecting</span>
+  </h2>
+
+  <figure>
+    <img src="images/win-candidates.png" alt="拼音输入中的候选窗">
+    <figcaption>
+      <span lang="zh">输入 <code>zhongguo</code> 后：拼音串在上，候选行给出「中国」，提示行讲当前能按什么键。</span>
+      <span lang="en">After typing <code>zhongguo</code>: the pinyin line on top, 「中国」in the candidate row, and the hint row listing the keys that do something.</span>
+    </figcaption>
+  </figure>
+
+  <table>
+    <thead><tr>
+      <th style="width:32%"><span lang="zh">按键</span><span lang="en">Key</span></th>
+      <th><span lang="zh">作用</span><span lang="en">Effect</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><td><kbd>a</kbd>–<kbd>z</kbd> <kbd>;</kbd></td>
+        <td><span lang="zh">拼音字母。<code>;</code> 是微软双拼方案里 <code>ing</code> 的位置。</span><span lang="en">Pinyin letters. <code>;</code> is where Microsoft double-pinyin puts <code>ing</code>.</span></td></tr>
+      <tr><td><kbd>1</kbd>–<kbd>9</kbd></td>
+        <td><span lang="zh">选对应候选词并上屏。</span><span lang="en">Commit the numbered candidate.</span></td></tr>
+      <tr><td><kbd>Space</kbd></td>
+        <td><span lang="zh">选第一个候选词。</span><span lang="en">Commit the first candidate.</span></td></tr>
+      <tr><td><kbd>Enter</kbd></td>
+        <td><span lang="zh">放弃候选，把拼<b>音</b>原样上屏。</span><span lang="en">Dismiss candidates and commit the raw <b>pinyin</b>.</span></td></tr>
+      <tr><td><kbd>Backspace</kbd></td>
+        <td><span lang="zh">退一个拼音字母；缓冲为空时透传给宿主。</span><span lang="en">Delete one pinyin letter; passed to the host when the buffer is empty.</span></td></tr>
+      <tr><td><kbd>Esc</kbd></td>
+        <td><span lang="zh">丢弃整串拼音。</span><span lang="en">Discard the composition.</span></td></tr>
+      <tr><td><kbd>PgDn</kbd> / <kbd>PgUp</kbd></td>
+        <td><span lang="zh">下一页 / 上一页候选。</span><span lang="en">Next / previous candidate page.</span></td></tr>
+      <tr><td><kbd>-</kbd> <kbd>=</kbd><br><kbd>,</kbd> <kbd>.</kbd></td>
+        <td><span lang="zh">同样翻页（更早的键位，仍保留）。它们不再占提示行的位置。</span><span lang="en">The same paging, from the earlier binding. Still supported, no longer advertised in the hint row.</span></td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Space</kbd></td>
+        <td><span lang="zh">显示/隐藏窗口，并切换中英。</span><span lang="en">Show/hide the window and toggle Chinese/English.</span></td></tr>
+      <tr><td><span lang="zh">单击</span><span lang="en">Single</span> <kbd>Shift</kbd></td>
+        <td><span lang="zh">切换中英。</span><span lang="en">Toggle Chinese/English.</span></td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>`</kbd></td>
+        <td><span lang="zh">打开设置对话框。</span><span lang="en">Open the settings dialog.</span></td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
+        <td><span lang="zh">循环切换输入方案。</span><span lang="en">Cycle the input scheme.</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note ok">
+    <p><span lang="zh"><b>英文模式下按键全部透传。</b>切到「英」之后 uIME 不吞任何键，宿主拿到的是原始按键——宿主自己的快捷键不会失灵。</span>
+    <span lang="en"><b>English mode passes every key through.</b> Switched to English, uIME swallows nothing and the host sees raw keystrokes — its own shortcuts keep working.</span></p>
+  </div>
+
+  <!-- ============================================ 05 -->
+  <h2 id="pages">
+    <span lang="zh">05 · 翻页找字</span>
+    <span lang="en">05 · Paging</span>
+  </h2>
+
+  <p><span lang="zh">候选多于一页时，提示行会变成翻页提示——这正是「想找的字不在这页」这个问题的答案所在。</span>
+     <span lang="en">When there is more than one page, the hint row turns into a paging prompt — which is exactly the answer to “the character I want isn’t on this page”.</span></p>
+
+  <div class="dbl">
+    <figure><img src="images/win-page1.png" alt="第 1 页候选">
+      <figcaption><span lang="zh">第 1/3 页：提示行显示页码与翻页键。</span><span lang="en">Page 1/3: the hint row shows the page number and the paging keys.</span></figcaption></figure>
+    <figure><img src="images/win-page2.png" alt="第 2 页候选">
+      <figcaption><span lang="zh">按 <kbd>PgDn</kbd> 后到第 2/3 页，候选行与提示行<b>同时</b>跟进。</span><span lang="en">After <kbd>PgDn</kbd>, page 2/3 — candidates and hint row follow <b>together</b>.</span></figcaption></figure>
+  </div>
+
+  <p><span lang="zh">提示行按状态切换，共三档：</span><span lang="en">The hint row has three states:</span></p>
+  <table>
+    <thead><tr><th style="width:30%"><span lang="zh">状态</span><span lang="en">State</span></th><th><span lang="zh">显示</span><span lang="en">Shows</span></th></tr></thead>
+    <tbody>
+      <tr><td><span lang="zh">没在打字</span><span lang="en">Idle</span></td>
+        <td><code>Ctrl+` 设置　Ctrl+P 方案　Shift 中英</code></td></tr>
+      <tr><td><span lang="zh">候选装得下一页</span><span lang="en">One page</span></td>
+        <td><code>数字键选字　空格 选第一个　回车 上屏拼音</code></td></tr>
+      <tr><td><span lang="zh">候选多页</span><span lang="en">Several pages</span></td>
+        <td><code>第 1/3 页　PGUP 上一页　PGDN 下一页</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================ 06 -->
+  <h2 id="scheme">
+    <span lang="zh">06 · 输入方案</span>
+    <span lang="en">06 · Input schemes</span>
+  </h2>
+
+  <p><span lang="zh">三种方案用 <kbd>Ctrl</kbd>+<kbd>P</kbd> 循环，也可以在设置里直接选。</span>
+     <span lang="en">Cycle the three schemes with <kbd>Ctrl</kbd>+<kbd>P</kbd>, or pick one in the settings.</span></p>
+
+  <table>
+    <thead><tr><th style="width:20%"><span lang="zh">方案</span><span lang="en">Scheme</span></th><th style="width:26%"><span lang="zh">打法</span><span lang="en">How you type</span></th><th><span lang="zh">例</span><span lang="en">Example</span></th></tr></thead>
+    <tbody>
+      <tr><td><b><span lang="zh">全拼</span><span lang="en">Full pinyin</span></b></td>
+        <td><span lang="zh">完整拼音逐个字母</span><span lang="en">Spell the whole syllable</span></td>
+        <td><code>zhongguo</code> → 中国</td></tr>
+      <tr><td><b><span lang="zh">双拼</span><span lang="en">Double pinyin</span></b><br><span style="font-size:12.5px;color:var(--ink3)">小鹤 / 微软</span></td>
+        <td><span lang="zh">声母一键、韵母一键，两键一音节</span><span lang="en">One key for the initial, one for the final</span></td>
+        <td><code>vsgo</code> → 中国</td></tr>
+      <tr><td><b><span lang="zh">简拼</span><span lang="en">Jianpin</span></b></td>
+        <td><span lang="zh">只打每个音节的声母</span><span lang="en">Initials only, one key per syllable</span></td>
+        <td><code>zg</code> → 中国</td></tr>
+    </tbody>
+  </table>
+
+  <div class="dbl">
+    <figure><img src="images/win-double.png" alt="双拼输入">
+      <figcaption><span lang="zh">小鹤双拼下用 <code>vsgo</code> 打出「中国」。</span><span lang="en">Xiaohe double-pinyin: <code>vsgo</code> yields 「中国」.</span></figcaption></figure>
+    <figure><img src="images/win-jianpin.png" alt="简拼输入">
+      <figcaption><span lang="zh">简拼下只用 <code>zg</code> 两个键。</span><span lang="en">Jianpin: just <code>zg</code>.</span></figcaption></figure>
+  </div>
+
+  <div class="note">
+    <p><span lang="zh"><b>双拼键位是从 RIME 公开方案机械推导的</b>，不是手抄的。<br>
+    <b>简拼按全局词频排名</b>。这一点不是实现细节：词表按首音节分桶、桶之间按音节字母序排列，如果按桶序取，<code>zg</code> 会先答出「糟糕」而不是「中国」。</span>
+    <span lang="en"><b>The double-pinyin tables are derived mechanically from RIME’s public schemas</b>, not transcribed by hand.<br>
+    <b>Jianpin ranks by global word frequency.</b> That is not a detail: the dictionary is bucketed by leading syllable with the buckets in alphabetical order, so taking them in bucket order answers 「糟糕」 before 「中国」.</span></p>
+  </div>
+
+  <!-- ============================================ 07 -->
+  <h2 id="kbd">
+    <span lang="zh">07 · 软键盘</span>
+    <span lang="en">07 · Soft keyboard</span>
+  </h2>
+
+  <p><span lang="zh">点右上角的<b>键盘图标</b>展开三行 QWERTY（27 键 = <code>a</code>–<code>z</code> 加 <code>;</code>）。这在只有鼠标的环境里是有用处的——UEFI Shell 的 USB 鼠标通常先于某种键盘可用。</span>
+     <span lang="en">Press the <b>keyboard icon</b> to unfold three rows of QWERTY (27 keys: <code>a</code>–<code>z</code> plus <code>;</code>). This matters where only a pointer is available — a USB mouse often works in UEFI before any given keyboard does.</span></p>
+
+  <figure>
+    <img src="images/win-softkbd.png" alt="软键盘展开">
+    <figcaption>
+      <span lang="zh">展开后窗口从 520×122 加高到 520×266，期间右上角的软键盘按钮保持点亮状态。</span>
+      <span lang="en">The window grows from 520×122 to 520×266, with the soft-keyboard button lit while it is open.</span>
+    </figcaption>
+  </figure>
+
+  <div class="note">
+    <p><span lang="zh"><b>点键与物理键盘走同一条引擎路径。</b>软键盘不是把字符直接塞给宿主，而是产生与按键等价的引擎输入——所以它同样有拼音串、候选、翻页，行为完全一致。</span>
+    <span lang="en"><b>Key presses go through the same engine path as physical keys.</b> The soft keyboard does not hand characters to the host directly; it produces engine input equivalent to a keystroke — so it has the same composition line, candidates and paging, and behaves identically.</span></p>
+  </div>
+
+  <!-- ============================================ 08 -->
+  <h2 id="settings">
+    <span lang="zh">08 · 设置</span>
+    <span lang="en">08 · Settings</span>
+  </h2>
+
+  <p><span lang="zh">点<b>齿轮图标</b>或按 <kbd>Ctrl</kbd>+<kbd>`</kbd> 打开。窗口底部有一行操作说明，不必记：</span>
+     <span lang="en">Open with the <b>gear icon</b> or <kbd>Ctrl</kbd>+<kbd>`</kbd>. There is a reminder printed along the bottom, so nothing has to be memorised:</span></p>
+
+  <p><kbd>↑</kbd><kbd>↓</kbd> <span lang="zh">选条目</span><span lang="en">select a row</span>　·　<kbd>←</kbd><kbd>→</kbd> <span lang="zh">改数值</span><span lang="en">change the value</span>　·　<kbd>Enter</kbd> <span lang="zh">保存退出</span><span lang="en">save and exit</span>　·　<kbd>Esc</kbd> <span lang="zh">放弃</span><span lang="en">discard</span></p>
+
+  <figure>
+    <img src="images/win-settings.png" alt="设置对话框">
+    <figcaption><span lang="zh">六项设置，窗口加高到 520×334。</span><span lang="en">Six rows; the window grows to 520×334.</span></figcaption>
+  </figure>
+
+  <table>
+    <thead><tr><th style="width:26%"><span lang="zh">设置项</span><span lang="en">Setting</span></th><th style="width:22%"><span lang="zh">取值</span><span lang="en">Values</span></th><th><span lang="zh">说明</span><span lang="en">Notes</span></th></tr></thead>
+    <tbody>
+      <tr><td><span lang="zh">候选个数</span><span lang="en">Candidate count</span></td><td>3 / 4 / <b>5</b> / 6 / 7 / 8</td>
+        <td><span lang="zh">一页显示几个候选。</span><span lang="en">How many candidates fit a page.</span></td></tr>
+      <tr><td><span lang="zh">窗口背景</span><span lang="en">Background</span></td><td><span lang="zh">6 种</span><span lang="en">6 presets</span></td>
+        <td><span lang="zh">只改窗身配色；拖动条那道四色渐变是固定的 accent，不跟着变。</span><span lang="en">Changes the panel only; the four-colour grab bar is a fixed accent and stays put.</span></td></tr>
+      <tr><td><span lang="zh">字体大小</span><span lang="en">Font size</span></td><td>14 / <b>16</b> / 18 / 20</td>
+        <td><span lang="zh">候选行与提示行的字号。</span><span lang="en">Size of the candidate and hint rows.</span></td></tr>
+      <tr><td><span lang="zh">输入方案</span><span lang="en">Scheme</span></td>
+        <td><span lang="zh">全拼 / 小鹤双拼 / 微软双拼 / 简拼</span><span lang="en">Full / Xiaohe / Microsoft / Jianpin</span></td>
+        <td><span lang="zh">等价于 <kbd>Ctrl</kbd>+<kbd>P</kbd> 的选择。</span><span lang="en">The same choice <kbd>Ctrl</kbd>+<kbd>P</kbd> cycles.</span></td></tr>
+      <tr><td><span lang="zh">默认输入模式</span><span lang="en">Default mode</span></td>
+        <td><span lang="zh">中 / 英</span><span lang="en">Chinese / English</span></td>
+        <td><span lang="zh">启动时的初始状态。</span><span lang="en">Initial state at load time.</span></td></tr>
+      <tr><td><span lang="zh">窗口位置</span><span lang="en">Placement</span></td>
+        <td><span lang="zh">底部居中 / 左下 / 右下</span><span lang="en">Bottom-centre / bottom-left / bottom-right</span></td>
+        <td><span lang="zh">之后的拖动会覆盖它。</span><span lang="en">Dragging afterwards overrides it.</span></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================ 09 -->
+  <h2 id="move">
+    <span lang="zh">09 · 拖动与停靠</span>
+    <span lang="en">09 · Moving &amp; docking</span>
+  </h2>
+
+  <p><span lang="zh">按住拖动条把窗口拖到任意位置；<b>松手时离哪条边近就贴哪条</b>（32 像素以内）。</span>
+     <span lang="en">Drag the window by its bar; <b>release near an edge (within 32px) and it snaps flush</b> to that edge.</span></p>
+
+  <div class="dbl">
+    <figure><img src="images/win-docked.png" alt="停靠到屏幕左上角">
+      <figcaption><span lang="zh">拖向左上后贴边停靠。</span><span lang="en">Docked to the top-left corner.</span></figcaption></figure>
+    <figure><img src="images/win-corner.png" alt="拖过屏幕角落">
+      <figcaption><span lang="zh">即使指针越过屏幕角落，窗口也<b>不会</b>甩到对面——抓取位移是有符号运算。</span><span lang="en">Even dragged past the corner it does <b>not</b> fly to the opposite side — the grab offset is computed signed.</span></figcaption></figure>
+  </div>
+
+  <div class="note">
+    <p><span lang="zh"><b>为什么拖动不会在屏幕上留一道。</b>窗口不是真窗口，"擦掉自己"只能靠盖上去之前存下来的那一份像素。位移<b>先画出新窗口、再归还旧矩形让出的部分</b>——屏幕上任意时刻都至少有一个完整窗口。若反过来先擦后画，两次之间会有一帧屏幕上根本没有窗口，而显示控制器是异步扫帧缓冲的，扫到那一帧就是一次闪烁。</span>
+    <span lang="en"><b>Why dragging leaves no smear.</b> There is no real window here, so erasing itself is only possible by restoring the pixels it saved before covering them. Each move <b>draws the new position first, then returns the strip the old rectangle vacates</b> — so a whole window is on screen at every instant. Doing it the other way round leaves a gap during which no window exists at all, and since the display controller scans asynchronously, hitting that gap is a visible flicker.</span></p>
+  </div>
+
+  <!-- ============================================ 10 -->
+  <h2 id="overlay">
+    <span lang="zh">10 · 浮在宿主之上</span>
+    <span lang="en">10 · Above the host</span>
+  </h2>
+
+  <p><span lang="zh">宿主程序完全不知道 uIME 的存在，而且往往每帧整屏重绘——重绘会把窗口盖掉。GOP 包装层在宿主的每次 <code>Blt</code> 之后把窗口重新盖章回去，并且<b>只重画被宿主改动的那块交集</b>：宿主刷一个光标，就只付光标那点代价。</span>
+     <span lang="en">The host knows nothing about uIME and commonly repaints the whole screen each frame, which would paint the window out. The GOP wrapper re-stamps it after every host <code>Blt</code> — and <b>only over the intersection the host actually changed</b>: repainting a cursor costs a cursor-sized re-stamp.</span></p>
+
+  <figure>
+    <img src="images/win-over-host.png" alt="宿主重绘后窗口仍在">
+    <figcaption><span lang="zh">宿主刚刚在自己的画面上画过东西，窗口依旧完整地在它上面。</span><span lang="en">The host has just painted over its own area; the window is still whole and on top.</span></figcaption>
+  </figure>
+
+  <div class="note stop">
+    <p><span lang="zh"><b>泵点在宿主的按键调用上，没有定时器。</b>这带来一条硬约束：宿主如果<b>不轮询控制台</b>（例如卡在某种模态等待里），IME 窗口就不会动——这在 §13 已知限制里有完整说明。</span>
+    <span lang="en"><b>The pump is the host’s key-polling call; there is no timer.</b> That imposes one hard constraint: a host that does <b>not</b> poll the console leaves the IME window frozen. See §13 for the full picture.</span></p>
+  </div>
+
+  <!-- ============================================ 11 -->
+  <h2 id="config">
+    <span lang="zh">11 · 配置文件</span>
+    <span lang="en">11 · uime.cfg</span>
+  </h2>
+
+  <p><span lang="zh">设置写入启动卷根目录的 <code>uime.cfg</code>，纯文本 <code>key=value</code>，可以直接用 Shell 的 <code>edit</code> 命令改。</span>
+     <span lang="en">Settings are written to <code>uime.cfg</code> in the root of the boot volume — plain <code>key=value</code> text you can edit with the Shell’s <code>edit</code>.</span></p>
+
+  <pre><code>candidates=5
+background=0
+font=16
+scheme=0
+chinese=1
+placement=0</code></pre>
+
+  <p><span lang="zh">缺失或损坏的文件不是错误——启动时按默认值继续。卸载驱动时也会保存一次：等窗口已经擦掉再写文件是没有道理的，用户的改动不能因为卸载丢掉。</span>
+     <span lang="en">A missing or corrupt file is not an error — startup falls back to defaults. Settings are also saved on unload: losing the user’s changes would make the dialog pointless.</span></p>
+
+  <!-- ============================================ 12 -->
+  <h2 id="trouble">
+    <span lang="zh">12 · 故障排查</span>
+    <span lang="en">12 · Troubleshooting</span>
+  </h2>
+
+  <table>
+    <thead><tr><th style="width:32%"><span lang="zh">现象</span><span lang="en">Symptom</span></th><th><span lang="zh">先看什么</span><span lang="en">Check</span></th></tr></thead>
+    <tbody>
+      <tr><td><span lang="zh">窗口没出现</span><span lang="en">No window</span></td>
+        <td><span lang="zh">串口有没有 <code>[Uime] window shown</code>。没有的话看更早的行：<code>[UimeOverlay] install ok</code> 与 <code>[UimeOverlay] selftest ok</code> 必须都在——自检失败会回滚整个安装，而不是留一个坏掉的半安装状态。</span>
+            <span lang="en">Does the log contain <code>[Uime] window shown</code>? If not, read back further: <code>[UimeOverlay] install ok</code> and <code>[UimeOverlay] selftest ok</code> must both be present — a failed self-test rolls the whole install back rather than leaving a half-installed one.</span></td></tr>
+      <tr><td><span lang="zh">窗口出来了但打不出候选</span><span lang="en">Window shows, no candidates</span></td>
+        <td><span lang="zh">看提示行显示的状态：停在「英」的画并不意味着故障。<kbd>Ctrl</kbd>+<kbd>Space</kbd> 或点中/英状态片切回。</span>
+            <span lang="en">Read the hint row: sitting in English mode is not a fault. Toggle back with <kbd>Ctrl</kbd>+<kbd>Space</kbd> or the language chip.</span></td></tr>
+      <tr><td><span lang="zh">在 Shell 里敲命令被吃掉</span><span lang="en">Shell commands get eaten</span></td>
+        <td><span lang="zh">中文模式下字母会进拼音缓冲——这是输入法在干活，不是故障。敲命令前先按 <kbd>Shift</kbd> 切到英文。</span>
+            <span lang="en">In Chinese mode the letters go into the pinyin buffer — that is the input method working, not a fault. Press <kbd>Shift</kbd> for English before typing a command.</span></td></tr>
+      <tr><td><span lang="zh">候选里有方框</span><span lang="en">Empty boxes in candidates</span></td>
+        <td><span lang="zh">字库没覆盖这个字。词库已按字体 cmap 过滤到 GB2312 全量；GB2312 之外的生僻字确实打不出来。</span>
+            <span lang="en">The font lacks the glyph. The dictionary is filtered against the font cmap up to full GB2312; anything outside it genuinely cannot be typed.</span></td></tr>
+      <tr><td><span lang="zh">宿主收不到汉字</span><span lang="en">Host receives nothing</span></td>
+        <td><span lang="zh">确认宿主是通过<b>控制台</b>读键的。直接访问键盘控制器、绕过 <code>SimpleTextIn(Ex)</code> 的程序不走拦截层。</span>
+            <span lang="en">Confirm the host reads through the <b>console</b>. Programs that talk to the keyboard controller directly, bypassing <code>SimpleTextIn(Ex)</code>, miss interception entirely.</span></td></tr>
+      <tr><td><span lang="zh">窗口冻住不动</span><span lang="en">Window frozen</span></td>
+        <td><span lang="zh">宿主当前没在轮询控制台——那就是泵点。这条见 §13。</span>
+            <span lang="en">The host is not polling the console, which <i>is</i> the pump. See §13.</span></td></tr>
+      <tr><td><span lang="zh">测试模式之间互相干扰</span><span lang="en">Modes interfere</span></td>
+        <td><span lang="zh">每个模式前重置磁盘镜像。<code>uime.cfg</code> 是会持久化的，上一轮的输入方案会被下一轮继承。</span>
+            <span lang="en">Reset the disk image before each mode. <code>uime.cfg</code> persists, so one run’s scheme is inherited by the next.</span></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================ 13 -->
+  <h2 id="limits">
+    <span lang="zh">13 · 已知限制</span>
+    <span lang="en">13 · Known limits</span>
+  </h2>
+
+  <ul>
+    <li><span lang="zh"><b>宿主必须轮询控制台。</b>没有定时器，宿主的 <code>ReadKeyStroke(Ex)</code> 调用既是输入口也是唯一的泵点。宿主卡在模态等待里时窗口冻住。</span>
+        <span lang="en"><b>The host must poll the console.</b> There is no timer; the host’s <code>ReadKeyStroke(Ex)</code> call is both the input path and the only pump. A host blocked in a modal wait leaves the window frozen.</span></li>
+    <li><span lang="zh"><b>回读屏幕会读到窗口。</b>宿主若用 <code>EfiBltVideoToBltBuffer</code> 读回，拿到的像素里包含盖在上面的窗口，因为栈里没有回读通路。</span>
+        <span lang="en"><b>Reading the screen back includes the window.</b> A host using <code>EfiBltVideoToBltBuffer</code> gets pixels with the window composited in; the stack has no read-back path.</span></li>
+    <li><span lang="zh"><b>字库覆盖 GB2312 全量 6763 字</b>；GBK / Unicode 扩展区的生僻字仍打不出来。</span>
+        <span lang="en"><b>Font coverage is full GB2312</b> (6763 characters); rarer characters from GBK and beyond still cannot be typed.</span></li>
+    <li><span lang="zh"><b>中文模式下 Shell 自身的命令行也会被拦。</b>按键先进输入法，所以装上之后敲 UEFI Shell 命令之前要先按 <kbd>Shift</kbd> 切英文——这是拦截式输入法的固有行为，不是缺陷。</span>
+        <span lang="en"><b>In Chinese mode the Shell's own command line is intercepted too.</b> Keys reach the input method first, so press <kbd>Shift</kbd> for English before typing a UEFI Shell command — inherent to an intercepting input method, not a defect.</span></li>
+    <li><span lang="zh"><b>本版明确不做</b>：模糊音（zh/z、n/l）、用户词频自学习、跟随光标定位。</span>
+        <span lang="en"><b>Deliberately out of scope for v1</b>: fuzzy initials (zh/z, n/l), user-dictionary frequency learning, and cursor-following placement.</span></li>
+  </ul>
+
+  <div class="foot">
+    <p><span lang="zh"><b>uIME 不开源。</b>源码留在私有仓，不对外授权；对外发布的 <code>uime.efi</code> 二进制品<b>免费授权个人用户</b>用于个人、非商业用途，商业用途需另行取得授权（条款见仓库根目录的 <code>LICENSE</code>）。词库数据来自 <code>pinyin-data</code> / <code>phrase-pinyin-data</code> / <code>jieba</code>（均为 MIT，版权归各自作者）；Rime 的 LGPL 词库被明确排除以避免许可污染。集成方式见 <code>docs/INTEGRATION.md</code>。</span>
+    <span lang="en"><b>uIME is not open source.</b> Its source stays private and is not licensed to anyone; the published <code>uime.efi</code> binary is <b>free for individual users</b> for personal, non-commercial use, while commercial use needs a separate licence (see <code>LICENSE</code> in the repository root). Dictionary data from <code>pinyin-data</code> / <code>phrase-pinyin-data</code> / <code>jieba</code> (all MIT, © their authors); Rime’s LGPL dictionaries are deliberately excluded. Integration details live in <code>docs/INTEGRATION.md</code>.</span></p>
+  </div>
+</main>
+</div>
+
+<script>
+(function(){
+  var z=document.getElementById('bzh'), e=document.getElementById('ben');
+  function set(en){
+    document.body.classList.toggle('en', en);
+    z.setAttribute('aria-pressed', String(!en));
+    e.setAttribute('aria-pressed', String(en));
+    document.documentElement.lang = en ? 'en' : 'zh-CN';
+    try{ localStorage.setItem('uime-manual-lang', en?'en':'zh'); }catch(_){}
+  }
+  z.onclick=function(){set(false);};
+  e.onclick=function(){set(true);};
+  try{ if(localStorage.getItem('uime-manual-lang')==='en') set(true); }catch(_){}
+
+  // Nav highlight follows the scrolled section.
+  var links=[].slice.call(document.querySelectorAll('nav a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  function hi(){
+    var y=window.scrollY+120, cur=0;
+    secs.forEach(function(s,i){ if(s && s.offsetTop<=y) cur=i; });
+    links.forEach(function(a,i){ a.classList.toggle('on', i===cur); });
+  }
+  window.addEventListener('scroll', hi, {passive:true});
+  hi();
+})();
+</script>
+</body>
+</html>
