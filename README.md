@@ -52,10 +52,13 @@ uIME 把「输入法」这件事放在**控制台输入层**：驱动装上之�
 一个字或二字词最多四码；简码一两个键就能出字。敲满四码接着打下一字时，首选自动上屏，
 可以一路连打。*
 
-![五笔演示](docs/manual/images/uime-wubi-demo.gif)
+![五笔演示](docs/manual/images/uime-wubi-demo-fast.gif)
 
-*一段 14.4 秒、1280×800 原分辨率录屏：在演示宿主里用五笔逐字打出
+*一段 9.2 秒、1280×800 原分辨率录屏：在演示宿主里用五笔逐字打出
 「我是uIME,我现在会了五笔」，结尾留了定格。逗号是半角，这一版没有中文标点输入。*
+
+同一段录屏还有一版节奏更慢的（14.4 秒，每字停留约 1.4 秒）：
+`docs/manual/images/uime-wubi-demo.gif`。
 
 **五种输入方案**（全拼 / 小鹤双拼 / 微软双拼 / 简拼 / 五笔 86）用
 <kbd>Ctrl</kbd>+<kbd>P</kbd> 循环，也可以在设置里直接选，选好的方案写进 `uime.cfg`。
@@ -270,11 +273,14 @@ level-1 shortcut `g` → 一. A character or a two-character word takes at most 
 shortcuts need only one or two. Once four keys are down, typing the next code commits the first
 candidate automatically, so a sentence flows without pressing Space.*
 
-![Wubi demo](docs/manual/images/uime-wubi-demo.gif)
+![Wubi demo](docs/manual/images/uime-wubi-demo-fast.gif)
 
-*A 14.4-second recording at the native 1280×800 resolution: typing
+*A 9.2-second recording at the native 1280×800 resolution: typing
 「我是uIME,我现在会了五笔」into the demonstration host with Wubi, held on the finished sentence.
 The comma is ASCII — Chinese punctuation has no entry in this version.*
+
+The same take also ships in a slower cut (14.4 seconds, about 1.4 s per character on screen):
+`docs/manual/images/uime-wubi-demo.gif`.
 
 **Five input schemes** (full pinyin / Xiaohe / Microsoft / jianpin / Wubi 86) cycle with
 <kbd>Ctrl</kbd>+<kbd>P</kbd> or can be picked in the settings; the choice is saved to `uime.cfg`.
