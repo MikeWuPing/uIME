@@ -31,8 +31,9 @@ uIME 是**专有软件，不开源**。
 
 5. 第三方组件
    随源码附带的拼音词库数据来自 `mozillazg/pinyin-data`、
-   `mozillazg/phrase-pinyin-data` 与 `fxsjy/jieba`（均为 MIT 许可），
-   其版权归各自作者；`LvglPkg`（LVGL 的 UEFI 移植层，MIT）为独立项目，
+   `mozillazg/phrase-pinyin-data` 与 `fxsjy/jieba`，五笔 86 码表来自
+   `limaofu/cof86`（以上均为 MIT 许可），其版权归各自作者；
+   `LvglPkg`（LVGL 的 UEFI 移植层，MIT）为独立项目，
    不属于本许可的授权范围，其随附的字体与美术资源另有其自身条款。
    本许可不改变上述第三方组件的许可条款。
 
@@ -80,8 +81,9 @@ uIME is **proprietary software and is not open source**.
 
 5. Third-party components
    The pinyin dictionary data shipped with the source comes from
-   `mozillazg/pinyin-data`, `mozillazg/phrase-pinyin-data` and `fxsjy/jieba`
-   (all MIT); their copyright belongs to their respective authors. `LvglPkg`
+   `mozillazg/pinyin-data`, `mozillazg/phrase-pinyin-data` and `fxsjy/jieba`;
+   the Wubi 86 code table comes from `limaofu/cof86` (all MIT). Their copyright
+   belongs to their respective authors. `LvglPkg`
    (the LVGL port layer for UEFI, MIT) is a separate project and is not
    licensed under this document — the fonts and artwork it ships carry their
    own terms. This licence does not alter the terms of any of those

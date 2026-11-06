@@ -2,11 +2,14 @@
 
 > 中文 ｜ [English](#english)
 
-**给 UEFI 环境用的中文输入法。** 它以常驻驱动的形式加载，接管控制台输入，把你敲的拼音翻译成
-汉字送出去——**之后启动的 UEFI 程序，只要读键盘，就能直接收到汉字**。输入法的候选窗、软键盘、
-设置面板以悬浮窗的形式盖在宿主程序画面上，不用改宿主一行代码。
+**给 UEFI 环境用的中文输入法。** 它以常驻驱动的形式加载，接管控制台输入，把你敲的拼音
+或五笔码翻译成汉字，以普通的 Unicode 按键交给正在读控制台的程序。候选窗、软键盘、
+设置面板以悬浮窗的形式盖在宿主程序画面上，宿主不需要为中文改代码。
 
-当前版本 **v0.1.0.49**（2026-09-22）·
+接收方有两条前提：要通过控制台读键，并且真的在轮询控制台。UEFI Shell 自己那条命令行
+不在服务范围内（中文模式下敲的字母会先进输入法）。细节见[集成指南](docs/uIME-集成指南.pdf)。
+
+当前版本 **v0.1.0.51**（2026-11-06）·
 [下载最新发布](https://github.com/MikeWuPing/uIME/releases/latest) ·
 [产品手册](docs/manual/index.html) · [集成指南](docs/uIME-集成指南.pdf)
 
@@ -16,8 +19,8 @@
 左 / 右 / 居中 / 上方四个停靠位 → 打开设置逐行看六项选项 → 最后用软键盘点出「南京」。*
 
 > **想把它接进你自己的 UEFI 程序？** 看[集成指南](docs/uIME-集成指南.pdf)（Word / PDF 双语）。
-> 里面写清楚了交付物是哪个文件、启动顺序为什么是强制的、宿主为什么零改动，以及固件内集成的
-> 两个坑和集成检查清单。
+> 里面写清楚了交付物是哪个文件、启动顺序为什么是强制的、宿主必须满足的条件，以及固件内
+> 集成的前提与检查清单。
 
 ---
 
@@ -28,7 +31,7 @@ UEFI Shell 和绝大多数 UEFI 应用只认 ASCII：键盘送进来的是 `EFI_
 UEFI 工具里接受中文输入——此前没有任何输入手段。
 
 uIME 把「输入法」这件事放在**控制台输入层**：驱动装上之后，之后启动的程序读键盘时，
-汉字就像普通按键一样到达。**宿主程序不需要为中文做任何改动。**
+汉字就像普通按键一样到达。
 
 ## 二、功能
 
@@ -40,6 +43,22 @@ uIME 把「输入法」这件事放在**控制台输入层**：驱动装上之�
 
 *全拼 `zhongguo` → 「中国」；小鹤双拼 `vsgo` → 「中国」；简拼只打声母 `zg` → 「中国」。
 双拼支持小鹤与微软两种方案（微软方案里 `ing` 落在 `;` 键上），简拼按词频排序。*
+
+### 五笔 86：按字形打字
+
+![五笔候选窗](docs/manual/images/win-wubi.png)
+
+*五笔 86 与拼音无关，按字形拆码：`khlg` → 「中国」，`trnt` → 「我」，一级简码 `g` → 「一」。
+一个字或二字词最多四码；简码一两个键就能出字。敲满四码接着打下一字时，首选自动上屏，
+可以一路连打。*
+
+![五笔演示](docs/manual/images/uime-wubi-demo.gif)
+
+*一段 14.4 秒、1280×800 原分辨率录屏：在演示宿主里用五笔逐字打出
+「我是uIME,我现在会了五笔」，结尾留了定格。逗号是半角，这一版没有中文标点输入。*
+
+**五种输入方案**（全拼 / 小鹤双拼 / 微软双拼 / 简拼 / 五笔 86）用
+<kbd>Ctrl</kbd>+<kbd>P</kbd> 循环，也可以在设置里直接选，选好的方案写进 `uime.cfg`。
 
 ### 悬浮候选窗，浮在任何程序之上
 
@@ -78,7 +97,7 @@ uIME 把「输入法」这件事放在**控制台输入层**：驱动装上之�
 
 ![界面导览](docs/manual/images/ui-tour.png)
 
-*① 拖动条　② 中/英状态片（可点）　③ 拼音串　④ 候选行　⑤ 提示行　⑥ 设置（齿轮）　⑦ 软键盘。*
+*① 拖动条　② 中/英状态片（可点）　③ 编码串　④ 候选行　⑤ 提示行　⑥ 设置（齿轮）　⑦ 软键盘。*
 
 ### 键位
 
@@ -87,15 +106,17 @@ uIME 把「输入法」这件事放在**控制台输入层**：驱动装上之�
 | <kbd>a</kbd>–<kbd>z</kbd> <kbd>;</kbd> | 拼音字母 |
 | <kbd>1</kbd>–<kbd>9</kbd> | 选对应候选词并上屏 |
 | <kbd>Space</kbd> | 选第一个候选词 |
-| <kbd>Enter</kbd> | 放弃候选，把拼音原样上屏 |
-| <kbd>Backspace</kbd> / <kbd>Esc</kbd> | 退一个字母 / 丢弃整串拼音 |
+| <kbd>Enter</kbd> | 放弃候选，把编码串原样上屏 |
+| <kbd>Backspace</kbd> / <kbd>Esc</kbd> | 退一个字母 / 丢弃整串编码 |
 | <kbd>PgDn</kbd> <kbd>PgUp</kbd> | 下一页 / 上一页 |
 | <kbd>Ctrl</kbd>+<kbd>Space</kbd> | 显示 / 隐藏窗口，并切换中英 |
 | 单击 <kbd>Shift</kbd> | 切换中英 |
 | <kbd>Ctrl</kbd>+<kbd>`</kbd> | 打开设置 |
 | <kbd>Ctrl</kbd>+<kbd>P</kbd> | 循环切换输入方案 |
 
-英文模式下按键全部透传——切到「英」之后 uIME 不吞任何键，宿主自己的快捷键照常工作。
+五笔方案下按字形码打 <kbd>a</kbd>–<kbd>y</kbd>，最多四码；<kbd>z</kbd> 通配符与拼音反查
+这一版没有。英文模式下按键全部透传——切到「英」之后 uIME 不吞任何键，宿主自己的快捷键
+照常工作。
 
 ### 其它
 
@@ -157,8 +178,8 @@ FS0:\> uimehost.efi            :: 再启动需要中文输入的程序（这里�
 
 | 文件 | 大小 | 说明 |
 |---|---|---|
-| `uime.efi` | 2.3 MB | **输入法本体，也是唯一的交付物**。常驻驱动（`DXE_DRIVER`），`load` 装它，编进固件卷的也是它 |
-| `uimehost.efi` | 2.1 MB | **演示宿主**（可选）。一个最小的读控制台程序，用来当场验证「汉字真的到了另一个程序里」——它自带中文字库，不依赖固件字体 |
+| `uime.efi` | 2.56 MB | **输入法本体，也是唯一的交付物**。常驻驱动（`DXE_DRIVER`），`load` 装它，编进固件卷的也是它 |
+| `uimehost.efi` | 2.12 MB | **演示宿主**（可选）。一个最小的读控制台程序，用来当场验证「汉字真的到了另一个程序里」——它自带中文字库，不依赖固件字体 |
 
 - 仓库里的 `bin/` 目录：最新版的两个二进制 + `SHA256SUMS.txt`
 - [Releases](https://github.com/MikeWuPing/uIME/releases) 页面：每个版本的发布包
@@ -176,6 +197,8 @@ FS0:\> uimehost.efi            :: 再启动需要中文输入的程序（这里�
   它的泵点就是宿主的读键调用。
 - 宿主如果用 `EfiBltVideoToBltBuffer` 回读屏幕，会读到被窗口盖住的像素。
 - 字库覆盖 GB2312 全量；GB2312 之外的生僻字（GBK / Unicode 扩展区）打不出来。
+- 五笔 86 只收单字与二字词，三字以上的词要逐字打；没有 `z` 通配符与拼音反查，
+  也没有中文标点输入。
 - 模糊音（zh/z、n/l）、用户词频自学习、跟随光标定位：本版不做。
 
 ## 六、许可
@@ -188,19 +211,24 @@ FS0:\> uimehost.efi            :: 再启动需要中文输入的程序（这里�
 企业内部批量部署、有偿集成与技术支持等）。条款全文见 [`LICENSE`](LICENSE)（中英双语，
 以中文为准）。
 
-第三方部分：拼音词库数据来自 `pinyin-data` / `phrase-pinyin-data` / `jieba`（均为 MIT，
-版权归各自作者）。
+第三方部分：拼音词库数据来自 `pinyin-data` / `phrase-pinyin-data` / `jieba`，五笔 86 码表
+来自 `limaofu/cof86`（均为 MIT，版权归各自作者）。
 
 ---
 
 # English
 
 **uIME** is a **Chinese input method for the UEFI Shell**. It loads as a resident driver, takes
-over console input, and turns the pinyin you type into Han characters — **any UEFI application
-started afterwards receives Chinese simply by reading the keyboard**. Its candidate window, soft
-keyboard and settings panel float above the host application. The host needs no changes at all.
+over console input, and turns the pinyin or Wubi shape codes you type into Han characters, delivered
+as ordinary Unicode keystrokes to whatever program is reading the console. Its candidate window,
+soft keyboard and settings panel float above the host application; the host needs no code changes.
 
-Current version **v0.1.0.49** (2026-09-22) ·
+Two conditions apply to the receiving program: it must read keys through the console, and it must
+actually be polling it. The UEFI Shell's own command line is outside that scope — in Chinese mode
+the letters go to the input method first. See the
+[integration guide](docs/uIME-集成指南.pdf) for details.
+
+Current version **v0.1.0.51** (2026-11-06) ·
 [latest release](https://github.com/MikeWuPing/uIME/releases/latest) ·
 [product manual](docs/manual/index.html) · [integration guide](docs/uIME-集成指南.pdf)
 
@@ -212,8 +240,8 @@ and tapping 南京 out on the soft keyboard.*
 
 > **Want it inside your own UEFI application?** Read the
 > [integration guide](docs/uIME-集成指南.pdf) (Word / PDF, bilingual). It covers which file ships,
-> why the boot order is mandatory, why host applications need no changes, the two traps of
-> firmware-volume integration, and a checklist.
+> why the boot order is mandatory, the conditions a host must satisfy, and the prerequisites and
+> checklist for firmware-volume integration.
 
 ### Why it exists
 
@@ -223,6 +251,8 @@ accepting Chinese input in your own UEFI tool had no input path at all — until
 
 ### Features
 
+#### Pinyin: full, double and jianpin
+
 ![Full pinyin](docs/manual/images/win-candidates.png)
 ![Double pinyin](docs/manual/images/win-double.png)
 ![Jianpin](docs/manual/images/win-jianpin.png)
@@ -230,6 +260,24 @@ accepting Chinese input in your own UEFI tool had no input path at all — until
 *Full pinyin `zhongguo` → 中国; Xiaohe double pinyin `vsgo` → 中国; jianpin, initials only,
 `zg` → 中国. Xiaohe and Microsoft double-pinyin tables are both supported (Microsoft puts `ing`
 on `;`); jianpin ranks by word frequency.*
+
+#### Wubi 86: type by shape
+
+![Wubi candidates](docs/manual/images/win-wubi.png)
+
+*Wubi 86 encodes a character's shape rather than its reading: `khlg` → 中国, `trnt` → 我, the
+level-1 shortcut `g` → 一. A character or a two-character word takes at most four keys, and the
+shortcuts need only one or two. Once four keys are down, typing the next code commits the first
+candidate automatically, so a sentence flows without pressing Space.*
+
+![Wubi demo](docs/manual/images/uime-wubi-demo.gif)
+
+*A 14.4-second recording at the native 1280×800 resolution: typing
+「我是uIME,我现在会了五笔」into the demonstration host with Wubi, held on the finished sentence.
+The comma is ASCII — Chinese punctuation has no entry in this version.*
+
+**Five input schemes** (full pinyin / Xiaohe / Microsoft / jianpin / Wubi 86) cycle with
+<kbd>Ctrl</kbd>+<kbd>P</kbd> or can be picked in the settings; the choice is saved to `uime.cfg`.
 
 ![Floating over the host](docs/manual/images/win-over-host.png)
 
@@ -258,7 +306,7 @@ saved to `uime.cfg` on the boot volume.*
 
 ![Window tour](docs/manual/images/ui-tour.png)
 
-*① grab bar ② 中/英 chip (clickable) ③ pinyin string ④ candidate row ⑤ hint row ⑥ settings
+*① grab bar ② 中/英 chip (clickable) ③ code string ④ candidate row ⑤ hint row ⑥ settings
 (gear) ⑦ soft keyboard.*
 
 | Key | Effect |
@@ -266,7 +314,7 @@ saved to `uime.cfg` on the boot volume.*
 | <kbd>a</kbd>–<kbd>z</kbd> <kbd>;</kbd> | Pinyin letters |
 | <kbd>1</kbd>–<kbd>9</kbd> | Commit the numbered candidate |
 | <kbd>Space</kbd> | Commit the first candidate |
-| <kbd>Enter</kbd> | Dismiss candidates, commit the raw pinyin |
+| <kbd>Enter</kbd> | Dismiss candidates, commit the raw code string |
 | <kbd>Backspace</kbd> / <kbd>Esc</kbd> | Delete one letter / discard the composition |
 | <kbd>PgDn</kbd> <kbd>PgUp</kbd> | Next / previous page |
 | <kbd>Ctrl</kbd>+<kbd>Space</kbd> | Show / hide the window, toggle Chinese / English |
@@ -274,9 +322,10 @@ saved to `uime.cfg` on the boot volume.*
 | <kbd>Ctrl</kbd>+<kbd>`</kbd> | Open settings |
 | <kbd>Ctrl</kbd>+<kbd>P</kbd> | Cycle the input scheme |
 
-In English mode every key passes through untouched, so the host's own shortcuts keep working.
-The font covers all 6763 characters of GB2312 and candidates are filtered against it, so nothing
-renders as a tofu box.
+Under Wubi 86 the shape code uses <kbd>a</kbd>–<kbd>y</kbd> and is at most four keys; the `z`
+wildcard and pinyin reverse lookup are not in this build. In English mode every key passes through
+untouched, so the host's own shortcuts keep working. The font covers all 6763 characters of GB2312
+and candidates are filtered against it, so nothing renders as a tofu box.
 
 ### How to start it
 
@@ -320,8 +369,8 @@ in `UnicodeChar`; anything `>= 0x80` came from the input method.
 
 | File | Size | What it is |
 |---|---|---|
-| `uime.efi` | 2.3 MB | **The input method — and the only deliverable.** A resident `DXE_DRIVER`; this is what `load` starts and what goes into a firmware volume |
-| `uimehost.efi` | 2.1 MB | **Demonstration host** (optional). A minimal console-reading program that proves characters really reach another application; it carries its own CJK font, so it does not depend on the firmware's |
+| `uime.efi` | 2.56 MB | **The input method — and the only deliverable.** A resident `DXE_DRIVER`; this is what `load` starts and what goes into a firmware volume |
+| `uimehost.efi` | 2.12 MB | **Demonstration host** (optional). A minimal console-reading program that proves characters really reach another application; it carries its own CJK font, so it does not depend on the firmware's |
 
 `bin/` in this repository holds the current binaries plus `SHA256SUMS.txt`;
 [Releases](https://github.com/MikeWuPing/uIME/releases) holds every published version.
@@ -338,6 +387,8 @@ in `UnicodeChar`; anything `>= 0x80` came from the input method.
 - A host that reads the screen back with `EfiBltVideoToBltBuffer` sees the pixels the window covers.
 - The font covers all of GB2312; rarer characters outside it (GBK / Unicode extension blocks)
   cannot be typed.
+- Wubi 86 carries single characters and two-character words only; longer words are typed character
+  by character. There is no `z` wildcard, no pinyin reverse lookup and no Chinese punctuation entry.
 - Fuzzy sounds (zh/z, n/l), user-dictionary learning and cursor-following placement: not in this
   version.
 
@@ -352,5 +403,5 @@ product or hardware, offering it as part of a paid service, deploying it across 
 or paid integration and support). Full terms in [`LICENSE`](LICENSE) (bilingual; the Chinese text
 prevails).
 
-Third-party: pinyin dictionary data from `pinyin-data` / `phrase-pinyin-data` / `jieba` (all MIT,
-© their authors).
+Third-party: pinyin dictionary data from `pinyin-data` / `phrase-pinyin-data` / `jieba`, and the
+Wubi 86 code table from `limaofu/cof86` (all MIT, © their authors).

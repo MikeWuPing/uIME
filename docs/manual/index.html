@@ -104,7 +104,7 @@
 
 <nav>
   <div class="brand"><span>uIME</span></div>
-  <div class="meta">v0.1.0.49 · 2026-09-22</div>
+  <div class="meta">v0.1.0.51 · 2026-11-06</div>
   <ol>
     <li><a href="#intro"><b>01</b><span lang="zh">它解决什么</span><span lang="en">The problem</span></a></li>
     <li><a href="#start"><b>02</b><span lang="zh">快速上手</span><span lang="en">Getting started</span></a></li>
@@ -133,7 +133,7 @@
     <span lang="en">uIME Product Manual</span>
   </h1>
   <p class="meta" style="color:var(--ink3);font-family:var(--mono);font-size:12.5px;margin:0 0 4px">
-    v0.1.0.49 · 2026-09-22 · 专有许可（二进制品个人用户免费）
+    v0.1.0.51 · 2026-11-06 · 专有许可（二进制品个人用户免费）
   </p>
 
   <p class="lede">
@@ -417,8 +417,8 @@ uimehost.efi               <span lang="zh">:: 演示宿主</span><span lang="en"
     <span lang="en">06 · Input schemes</span>
   </h2>
 
-  <p><span lang="zh">三种方案用 <kbd>Ctrl</kbd>+<kbd>P</kbd> 循环，也可以在设置里直接选。</span>
-     <span lang="en">Cycle the three schemes with <kbd>Ctrl</kbd>+<kbd>P</kbd>, or pick one in the settings.</span></p>
+  <p><span lang="zh">四种方案用 <kbd>Ctrl</kbd>+<kbd>P</kbd> 循环，也可以在设置里直接选。</span>
+     <span lang="en">Cycle the four schemes with <kbd>Ctrl</kbd>+<kbd>P</kbd>, or pick one in the settings.</span></p>
 
   <table>
     <thead><tr><th style="width:20%"><span lang="zh">方案</span><span lang="en">Scheme</span></th><th style="width:26%"><span lang="zh">打法</span><span lang="en">How you type</span></th><th><span lang="zh">例</span><span lang="en">Example</span></th></tr></thead>
@@ -432,6 +432,9 @@ uimehost.efi               <span lang="zh">:: 演示宿主</span><span lang="en"
       <tr><td><b><span lang="zh">简拼</span><span lang="en">Jianpin</span></b></td>
         <td><span lang="zh">只打每个音节的声母</span><span lang="en">Initials only, one key per syllable</span></td>
         <td><code>zg</code> → 中国</td></tr>
+      <tr><td><b><span lang="zh">五笔 86</span><span lang="en">Wubi 86</span></b></td>
+        <td><span lang="zh">按字根拆字，最多四码</span><span lang="en">Shape code, up to four keys</span></td>
+        <td><code>khlg</code> → 中国</td></tr>
     </tbody>
   </table>
 
@@ -442,11 +445,21 @@ uimehost.efi               <span lang="zh">:: 演示宿主</span><span lang="en"
       <figcaption><span lang="zh">简拼下只用 <code>zg</code> 两个键。</span><span lang="en">Jianpin: just <code>zg</code>.</span></figcaption></figure>
   </div>
 
+  <figure>
+    <img src="images/win-wubi.png" alt="五笔输入">
+    <figcaption>
+      <span lang="zh">五笔 86 下用 <code>khlg</code> 打出「中国」。字形码占着拼音行的位置，提示行也相应写成「上屏编码」。</span>
+      <span lang="en">Wubi 86: <code>khlg</code> yields 「中国」. The shape code takes the pinyin line, and the hint row names the raw code instead.</span>
+    </figcaption>
+  </figure>
+
   <div class="note">
     <p><span lang="zh"><b>双拼键位是从 RIME 公开方案机械推导的</b>，不是手抄的。<br>
     <b>简拼按全局词频排名</b>。这一点不是实现细节：词表按首音节分桶、桶之间按音节字母序排列，如果按桶序取，<code>zg</code> 会先答出「糟糕」而不是「中国」。</span>
     <span lang="en"><b>The double-pinyin tables are derived mechanically from RIME’s public schemas</b>, not transcribed by hand.<br>
     <b>Jianpin ranks by global word frequency.</b> That is not a detail: the dictionary is bucketed by leading syllable with the buckets in alphabetical order, so taking them in bucket order answers 「糟糕」 before 「中国」.</span></p>
+    <p><span lang="zh"><b>五笔 86 是字形码</b>，与拼音无关：一个字或二字词最多四码，一级简码一键出字，二级简码两键出字。编码有精确结果时，候选窗只列这几个候选；只有遇到没有对应简码的未完成码，才按词频给出以这几键开头的提示。敲满四码后再按字母，首选自动上屏，接着开始打下一个字。<code>z</code> 通配符与拼音反查不在这一版里。</span>
+    <span lang="en"><b>Wubi 86 encodes a character’s shape</b>, not its reading. A character or a two-character word takes at most four keys; level-1 jianma produce a character from a single key, level-2 from two. When a code has an exact answer, the window lists only those candidates; longer codes are suggested by frequency only for an unfinished code with no exact match. Once four keys are down, the next letter commits the first candidate and starts the next code, so words flow without a space. The <code>z</code> wildcard and pinyin reverse lookup are not in this build.</span></p>
   </div>
 
   <!-- ============================================ 07 -->
@@ -497,7 +510,7 @@ uimehost.efi               <span lang="zh">:: 演示宿主</span><span lang="en"
       <tr><td><span lang="zh">字体大小</span><span lang="en">Font size</span></td><td>14 / <b>16</b> / 18 / 20</td>
         <td><span lang="zh">候选行与提示行的字号。</span><span lang="en">Size of the candidate and hint rows.</span></td></tr>
       <tr><td><span lang="zh">输入方案</span><span lang="en">Scheme</span></td>
-        <td><span lang="zh">全拼 / 小鹤双拼 / 微软双拼 / 简拼</span><span lang="en">Full / Xiaohe / Microsoft / Jianpin</span></td>
+        <td><span lang="zh">全拼 / 小鹤双拼 / 微软双拼 / 简拼 / 五笔</span><span lang="en">Full / Xiaohe / Microsoft / Jianpin / Wubi 86</span></td>
         <td><span lang="zh">等价于 <kbd>Ctrl</kbd>+<kbd>P</kbd> 的选择。</span><span lang="en">The same choice <kbd>Ctrl</kbd>+<kbd>P</kbd> cycles.</span></td></tr>
       <tr><td><span lang="zh">默认输入模式</span><span lang="en">Default mode</span></td>
         <td><span lang="zh">中 / 英</span><span lang="en">Chinese / English</span></td>
@@ -620,8 +633,8 @@ placement=0</code></pre>
   </ul>
 
   <div class="foot">
-    <p><span lang="zh"><b>uIME 不开源。</b>源码留在私有仓，不对外授权；对外发布的 <code>uime.efi</code> 二进制品<b>免费授权个人用户</b>用于个人、非商业用途，商业用途需另行取得授权（条款见仓库根目录的 <code>LICENSE</code>）。词库数据来自 <code>pinyin-data</code> / <code>phrase-pinyin-data</code> / <code>jieba</code>（均为 MIT，版权归各自作者）；Rime 的 LGPL 词库被明确排除以避免许可污染。集成方式见 <code>docs/INTEGRATION.md</code>。</span>
-    <span lang="en"><b>uIME is not open source.</b> Its source stays private and is not licensed to anyone; the published <code>uime.efi</code> binary is <b>free for individual users</b> for personal, non-commercial use, while commercial use needs a separate licence (see <code>LICENSE</code> in the repository root). Dictionary data from <code>pinyin-data</code> / <code>phrase-pinyin-data</code> / <code>jieba</code> (all MIT, © their authors); Rime’s LGPL dictionaries are deliberately excluded. Integration details live in <code>docs/INTEGRATION.md</code>.</span></p>
+    <p><span lang="zh"><b>uIME 不开源。</b>源码留在私有仓，不对外授权；对外发布的 <code>uime.efi</code> 二进制品<b>免费授权个人用户</b>用于个人、非商业用途，商业用途需另行取得授权（条款见仓库根目录的 <code>LICENSE</code>）。词库数据来自 <code>pinyin-data</code> / <code>phrase-pinyin-data</code> / <code>jieba</code>（均为 MIT，版权归各自作者）；五笔 86 码表来自 <code>limaofu/cof86</code>（MIT）。Rime 的 LGPL 词库被明确排除以避免许可污染。集成方式见随附的《uIME 集成指南》（Word / PDF）。</span>
+    <span lang="en"><b>uIME is not open source.</b> Its source stays private and is not licensed to anyone; the published <code>uime.efi</code> binary is <b>free for individual users</b> for personal, non-commercial use, while commercial use needs a separate licence (see <code>LICENSE</code> in the repository root). Dictionary data from <code>pinyin-data</code> / <code>phrase-pinyin-data</code> / <code>jieba</code> (all MIT, © their authors); the Wubi 86 code table comes from <code>limaofu/cof86</code> (MIT). Rime’s LGPL dictionaries are deliberately excluded. Integration details live in the bundled <i>uIME Integration Guide</i> (Word / PDF).</span></p>
   </div>
 </main>
 </div>
