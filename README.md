@@ -13,10 +13,11 @@
 [下载最新发布](https://github.com/MikeWuPing/uIME/releases/latest) ·
 [产品手册](docs/manual/index.html) · [集成指南](docs/uIME-集成指南.pdf)
 
-![uIME 演示](docs/manual/images/uime-demo.gif)
+![uIME 演示](docs/manual/images/uime-demo-native.gif)
 
 *一段连续演示，无剪辑：在演示宿主里用拼音打出「大小」「左右」并上屏 → 把输入法窗口拖到
-左 / 右 / 居中 / 上方四个停靠位 → 打开设置逐行看六项选项 → 最后用软键盘点出「南京」。*
+左 / 右 / 居中 / 上方四个停靠位 → 打开设置逐行看六项选项 → 最后用软键盘点出「南京」。
+画面是 1280×800 的原始分辨率。*
 
 > **想把它接进你自己的 UEFI 程序？** 看[集成指南](docs/uIME-集成指南.pdf)（Word / PDF 双语）。
 > 里面写清楚了交付物是哪个文件、启动顺序为什么是强制的、宿主必须满足的条件，以及固件内
@@ -235,11 +236,11 @@ Current version **v0.1.0.51** (2026-11-06) ·
 [latest release](https://github.com/MikeWuPing/uIME/releases/latest) ·
 [product manual](docs/manual/index.html) · [integration guide](docs/uIME-集成指南.pdf)
 
-![uIME demo](docs/manual/images/uime-demo.gif)
+![uIME demo](docs/manual/images/uime-demo-native.gif)
 
 *One continuous take, nothing cut: typing 大小 and 左右 in the demonstration host and committing
 them, dragging the window to the left, right, centre and top docks, walking the six settings rows,
-and tapping 南京 out on the soft keyboard.*
+and tapping 南京 out on the soft keyboard. Recorded at the native 1280×800 resolution.*
 
 > **Want it inside your own UEFI application?** Read the
 > [integration guide](docs/uIME-集成指南.pdf) (Word / PDF, bilingual). It covers which file ships,
